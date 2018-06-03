@@ -66,29 +66,37 @@ void print_player_name(void) {
 
 void print_move(struct bot *b) {
     
-    struct location *l = b->location;
-    
+    struct location *l = b->location;               // some elements from the lab extersize 
+    char food[MAX_NAME_CHARS] = "fake_fruit" ;
+    if(strcmp(l->fruit, "Nothing") != 0){           // make char food = only actual fruit atbot location
+        if(strcmp(l->fruit, "Anything") != 0){ 
+            if(strcmp(l->fruit, "Electricity") != 0){
+                strcpy(food, l->fruit);
+            }                                           
+        }
+    }        
     if (
         l->price < 0 &&
         l->quantity > 0 &&
         strcmp(l->fruit, "Electricity") == 0 &&
-        b->battery_level < b->battery_capacity
+        b->battery_level < b->battery_capacity &&
+        b->cash > l->price*-1
         ) {
         printf("Buy %d\n", b->battery_capacity - b->battery_level);
     } else  if (
         l->price < 0 &&
         l->quantity > 0 &&
-        strcmp(l->fruit, "Apples") == 0 &&
+        strcmp(l->fruit, food) == 0 &&                // is only going to buy fruit, not get stuck on Nothing and Anything
         b->fruit_kg == 0 &&
-        l->price < b->cash 
+        l->price*-1 < b->cash                             // wont stay at location if doesnt have money to buy
         ) {
         printf("Buy %d\n", b->maximum_fruit_kg);
     } else  if (
         l->price > 0 &&
         l->quantity > 0 &&
-        strcmp(l->fruit, "Apples") == 0 &&
+        strcmp(l->fruit, food) == 0 &&
         b->fruit_kg > 0 &&
-        strcmp(b->fruit, "Apples") == 0
+        l->quantity > 0                             // stops botty boy trying to sell to somone that cant buy
         ) {
         printf("Sell %d\n", b->fruit_kg);
     } else {
@@ -98,7 +106,10 @@ void print_move(struct bot *b) {
 }
 
 // ADD A COMMENT HERE EXPLAINING YOUR OVERALL TESTING STRATEGY
-/* the main idea was to create a function that would scan through the world and create a struct for each different piece of fruit it could find, in this struct it would hold the highest sell price if the fruit it could find and the lowest buy price (for the player). after it looked around the world it would calculate the the max potential profit of the fruit and return the distance in moves to get to the best seller of that fruit. to test this i would make a little world with different fruits and prices and see if it choose the right one. after that a fuction would be made that if cargo is on board, looks for the most profitable buyer and drives to them, making sure battery is in range. same testing strategy as before. sadly i couldnt get the function to work and put all my eggs in one basket ;/.   
+/* the main idea was to create a function that would scan through the world and create a struct for each different piece of fruit it could find, in this struct it would hold the highest sell price if the fruit it could find and the lowest buy price (for the player). after it looked around the world it would calculate the the max potential profit of the fruit and return the distance in moves to get to the best seller of that fruit. to test this i would make a little world with different fruits and prices and see if it choose the right one. after that a fuction would be made that if cargo is on board, looks for the most profitable buyer and drives to them, making sure battery is in range. same testing strategy as before. sadly i couldnt get the function to work and put all my eggs in one basket ;/. 
+
+how to test print_move function, run fruit bot and pipe it with own txt code thatyou can edit in another file to test that is it not getting stuck trying to do illigal moves such as sell wrong fruit and it not buying/selling when quantity is 0;  
+ass it is only moving one at a time, dont need to check if the wanted travel distance is to great for the battery as it cant do anything about it
 
 */
 
@@ -110,6 +121,7 @@ void run_unit_tests(void) {
     // but make sure you describe your testing strategy above.
 }
 // ADD YOUR FUNCTIONS HERE
+
 /*
 int best_buy_move(struct bot *b){
     
@@ -138,8 +150,9 @@ int best_buy_move(struct bot *b){
 }
 
 
+////////////////////////////////////////////
 /////////////////////////////////////////////
-/////////////////////////////////////////////
+
 struct fruit_potential *new_fruit_potential(struct bot *b, int distance){ //just makes a fruit potential struct and returns adress not for the edit part of best
     
     struct fruit_potential *new = malloc(sizeof(struct fruit_potential));
@@ -183,5 +196,4 @@ void run_through_list(struct fruit_potential *topa, struct bot *b, int distance)
 }                                           
 
 */
-
 
